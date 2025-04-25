@@ -185,6 +185,18 @@ button:hover {
       currentIndex = (currentIndex + 1) % slides.length;
       slides[currentIndex].classList.add("active");
     }, 3000);
+
+    // Check server connection
+    fetch('/api/health')
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          console.log('Server connected successfully');
+        }
+      })
+      .catch(error => {
+        console.error('Server connection failed:', error);
+      });
   </script>
 </body>
 </html>

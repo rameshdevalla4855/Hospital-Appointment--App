@@ -1,12 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const { sendAppointmentConfirmation } = require('./js/emailService');
+const path = require('path');
 
 const app = express();
 
 // Enable CORS and JSON parsing
 app.use(cors());
 app.use(express.json());
+
+// Serve static files
+app.use(express.static(path.join(__dirname)));
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 app.post('/api/sendAppointmentConfirmation', async (req, res) => {
   try {
