@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e1f5fe, #ede7f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      animation: fadeIn 0.4s ease-in;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      text-align: left;
+    }
+
+    h2 {
+      color: #1976d2;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    button {
+      background-color: #7b1fa2;
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      background-color: #4a0072;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(123, 31, 162, 0.3);
+    }
+
+    .logout-button {
+      background-color: #d32f2f;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .logout-button:hover {
+      background-color: #b71c1c;
+      box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome, <span id="patientName"></span></h2>
+    <div class="button-container">
+      <div class="action-buttons">
+        <button onclick="location.href='personal-details.html'">
+          <span>👤</span> Personal Details
+        </button>
+        <button onclick="location.href='appointment-status.html'">
+          <span>📋</span> Appointment Status
+        </button>
+        <button onclick="location.href='previous-appointments.html'">
+          <span>📅</span> Previous Appointments
+        </button>
+        <button onclick="location.href='search-doctors.html'">
+          <span>🔍</span> Search Doctors
+        </button>
+      </div>
+      <button onclick="logout()" class="logout-button">
+        <span>🚪</span> Logout
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const patient = JSON.parse(localStorage.getItem("loggedInPatient"));
+
+    if (!patient) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("patientName").textContent = patient.name;
+
+    function logout() {
+      localStorage.removeItem("loggedInPatient");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

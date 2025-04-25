@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Previous Appointments</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #1976d2;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .card {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    p {
+      font-size: 16px;
+      color: #333;
+      margin: 10px 0;
+    }
+
+    button {
+      background-color: #1976d2;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      button {
+        font-size: 15px;
+        padding: 10px;
+      }
+    }
+
+    .feedback-btn {
+      background-color: #4CAF50;
+      margin-top: 10px;
+    }
+
+    .feedback-section {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f1f8e9;
+      border-radius: 8px;
+    }
+
+    .feedback-input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    .star {
+      font-size: 24px;
+      cursor: pointer;
+      color: #ddd;
+    }
+
+    .star.active {
+      color: #ffd700;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Previous Appointments</h2>
+    <div id="previousAppointments"></div>
+    <button onclick="goBack()">Back to Dashboard</button>
+  </div>
+
+  <script>
+    const patient = JSON.parse(localStorage.getItem("loggedInPatient"));
+
+    if (!patient) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const patientAppointments = appointments.filter(app =>
+      app.patientEmail === patient.email && app.status === "Completed"
+    );
+
+    const container = document.getElementById("previousAppointments");
+
+    if (patientAppointments.length === 0) {
+      container.innerHTML = "<p>No previous appointments found.</p>";
+    } else {
+      container.innerHTML = patientAppointments.map(app => `
+        <div class="card">
+          <p><strong>Doctor:</strong> ${app.doctorName}</p>
+          <p><strong>Date:</strong> ${app.date}</p>
+          <p><strong>Time:</strong> ${app.slot}</p>
+          ${app.feedback ? `
+            <div class="feedback-section">
+              <p><strong>Your Feedback:</strong></p>
+              <p>Rating: ${'⭐'.repeat(app.rating || 0)}</p>
+              <p>${app.feedback}</p>
+            </div>
+          ` : `
+            <div class="feedback-section">
+              <p><strong>Add Your Feedback:</strong></p>
+              <div class="star-rating" id="stars-${app.date}-${app.slot}">
+                ${'<span class="star" data-value="1">★</span>'.repeat(5)}
+              </div>
+              <textarea class="feedback-input" placeholder="Write your feedback here..." id="feedback-${app.date}-${app.slot}"></textarea>
+              <button class="feedback-btn" onclick="submitFeedback('${app.date}', '${app.slot}')">Submit Feedback</button>
+            </div>
+          `}
+        </div>
+      `).join('');
+
+      // Initialize star ratings
+      patientAppointments.forEach(app => {
+        if (!app.feedback) {
+          const starsContainer = document.getElementById(`stars-${app.date}-${app.slot}`);
+          if (starsContainer) {
+            const stars = starsContainer.getElementsByClassName('star');
+            Array.from(stars).forEach((star, index) => {
+              star.addEventListener('click', () => setRating(stars, index + 1));
+            });
+          }
+        }
+      });
+    }
+
+    function setRating(stars, rating) {
+      Array.from(stars).forEach((star, index) => {
+        star.classList.toggle('active', index < rating);
+      });
+    }
+
+    function submitFeedback(date, slot) {
+      const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+      const appointmentIndex = appointments.findIndex(app => 
+        app.patientEmail === patient.email && 
+        app.date === date && 
+        app.slot === slot
+      );
+
+      if (appointmentIndex === -1) {
+        alert("Appointment not found!");
+        return;
+      }
+
+      const feedbackText = document.getElementById(`feedback-${date}-${slot}`).value;
+      const starsContainer = document.getElementById(`stars-${date}-${slot}`);
+      const rating = starsContainer.getElementsByClassName('active').length;
+
+      if (!feedbackText.trim() || rating === 0) {
+        alert("Please provide both rating and feedback!");
+        return;
+      }
+
+      appointments[appointmentIndex].feedback = feedbackText;
+      appointments[appointmentIndex].rating = rating;
+      localStorage.setItem("appointments", JSON.stringify(appointments));
+
+      alert("Thank you for your feedback!");
+      location.reload();
+    }
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

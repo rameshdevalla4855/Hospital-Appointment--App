@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Previous Appointments</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 900px;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: linear-gradient(to right, #f8f9fa, #ffffff);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      border-left: 5px solid #4CAF50;
+      animation: fadeIn 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .feedback-section {
+      background: #f1f8e9;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .feedback-section:hover {
+      background: #e8f5e9;
+      transform: scale(1.02);
+    }
+
+    .rating {
+      color: #ffd700;
+      font-size: 20px;
+      margin: 10px 0;
+    }
+
+    button {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📋 Previous Appointments</h2>
+    <div id="appointmentHistory"></div>
+    <button onclick="goBack()">← Back to Dashboard</button>
+  </div>
+
+  <script>
+    const doctor = JSON.parse(localStorage.getItem("loggedInDoctor"));
+
+    if (!doctor) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const previousAppointments = appointments.filter(app =>
+      app.doctorEmail === doctor.email && app.status === "Completed"
+    );
+
+    const container = document.getElementById("appointmentHistory");
+
+    if (previousAppointments.length === 0) {
+      container.innerHTML = "<p style='color: #757575;'>No previous appointments found.</p>";
+    } else {
+      container.innerHTML = previousAppointments.map(app => `
+        <div class="card">
+          <p><strong>Patient:</strong> ${app.patientEmail}</p>
+          <p><strong>Date:</strong> ${app.date}</p>
+          <p><strong>Time:</strong> ${app.slot}</p>
+          <p><strong>Feedback:</strong> ${app.feedback || "No feedback"}</p>
+        </div>
+      `).join('');
+    }
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

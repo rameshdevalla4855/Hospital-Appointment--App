@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dashboard-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 90%;
+      max-width: 1000px;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e3f2fd;
+    }
+
+    .welcome-section {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      transform: translateY(0);
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      object-fit: cover;
+    }
+
+    .profile-pic:hover {
+      transform: scale(1.1);
+    }
+
+    .welcome-text {
+      flex: 1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .menu-item {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-5px) scale(1.02);
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+    }
+
+    .menu-item i {
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e8f5e9;
+      border-radius: 10px;
+      color: #2E7D32;
+      transition: all 0.3s ease;
+    }
+
+    .menu-item:hover i {
+      background: white;
+    }
+
+    .logout-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #d32f2f;
+      transform: scale(1.05);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f44336;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      animation: pulse 2s infinite;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="header">
+      <h2>Doctor Dashboard</h2>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+
+    <div class="welcome-section">
+      <img src="../images/doctor.png" alt="Doctor Profile" class="profile-pic">
+      <div class="welcome-text">
+        <h3><i class="fas fa-user-md"></i> Welcome, Dr. <span id="doctorName"></span></h3>
+        <p>Have a great day at work!</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="fas fa-calendar-check"></i>
+        <h4>Today's Appointments</h4>
+        <h3 id="todayCount">0</h3>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h4>Total Patients</h4>
+        <h3 id="patientCount">0</h3>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-star"></i>
+        <h4>Rating</h4>
+        <h3 id="rating">4.5</h3>
+      </div>
+    </div>
+
+    <div class="menu-grid">
+      <div class="menu-item" onclick="location.href='personal-details.html'">
+        <i class="fas fa-user"></i>
+        <div>
+          <h4>Personal Details</h4>
+          <small>View and update your profile</small>
+        </div>
+      </div>
+      <div class="menu-item" onclick="location.href='today-schedule.html'">
+        <i class="fas fa-calendar-day"></i>
+        <div>
+          <h4>Today's Schedule</h4>
+          <small>Manage your appointments</small>
+        </div>
+      </div>
+      <div class="menu-item" onclick="location.href='previous-appointments.html'">
+        <i class="fas fa-history"></i>
+        <div>
+          <h4>Previous Appointments</h4>
+          <small>View past consultations</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const doctor = JSON.parse(localStorage.getItem("loggedInDoctor"));
+
+    if (!doctor) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("doctorName").textContent = doctor.name;
+
+    // Calculate statistics
+    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const today = new Date().toISOString().split('T')[0];
+    
+    const todayAppointments = appointments.filter(app => 
+      app.doctorEmail === doctor.email && app.date === today
+    ).length;
+
+    const totalPatients = new Set(appointments
+      .filter(app => app.doctorEmail === doctor.email)
+      .map(app => app.patientEmail)
+    ).size;
+
+    document.getElementById("todayCount").textContent = todayAppointments;
+    document.getElementById("patientCount").textContent = totalPatients;
+
+    function logout() {
+      if(confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("loggedInDoctor");
+        window.location.href = "login.html";
+      }
+    }
+
+    // Add hover effects
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('mouseenter', e => {
+        e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
+      });
+      
+      item.addEventListener('mouseleave', e => {
+        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Today’s Schedule</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body {
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 700px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    h2 {
+      color: #00796b;
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .card {
+      background-color: #f5f5f5;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 5px solid #00796b;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+    }
+
+    .card p {
+      margin: 8px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .card button {
+      margin-top: 10px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .card button:hover {
+      background-color: #004d40;
+    }
+
+    button {
+      background-color: #00796b;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin-top: 20px;
+      font-size: 16px;
+      border-radius: 12px;
+      width: 100%;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    p {
+      text-align: center;
+      color: #777;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      .card p, h2 {
+        font-size: 16px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📅 Today’s Appointments</h2>
+    <div id="scheduleList"></div>
+    <button onclick="goBack()">🔙 Back to Dashboard</button>
+  </div>
+
+  <script>
+    const doctor = JSON.parse(localStorage.getItem("loggedInDoctor"));
+    if (!doctor) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const todayAppointments = appointments.filter(app =>
+      app.doctorEmail === doctor.email && app.date === today
+    );
+
+    const container = document.getElementById("scheduleList");
+
+    if (todayAppointments.length === 0) {
+      container.innerHTML = "<p>No appointments scheduled for today.</p>";
+    } else {
+      container.innerHTML = todayAppointments.map(app => `
+        <div class="card">
+          <p><strong>Patient:</strong> ${app.patientEmail}</p>
+          <p><strong>Time:</strong> ${app.slot}</p>
+          <p><strong>Status:</strong> ${app.status}</p>
+          <button onclick="markAsCompleted('${app.patientEmail}', '${app.date}', '${app.slot}')">Mark as Completed</button>
+        </div>
+      `).join('');
+    }
+
+    async function markAsCompleted(patientEmail, date, slot) {
+      const index = appointments.findIndex(app =>
+        app.patientEmail === patientEmail &&
+        app.date === date &&
+        app.slot === slot
+      );
+
+      if (index !== -1) {
+        appointments[index].status = "Completed";
+        appointments[index].meetLink = "Completed";
+        
+        try {
+          // Send completion notification
+          await fetch('/api/sendAppointmentCompletion', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(appointments[index])
+          });
+
+          localStorage.setItem("appointments", JSON.stringify(appointments));
+          alert("Marked as completed. Notification email sent to patient.");
+          location.reload();
+        } catch (error) {
+          console.error('Error sending completion notification:', error);
+          alert("Marked as completed but email notification failed.");
+        }
+      }
+    }
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

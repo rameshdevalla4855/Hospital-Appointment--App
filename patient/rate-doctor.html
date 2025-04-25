@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Doctor</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Rate Your Doctor</h2>
+        <div class="rating-form">
+            <select id="doctorSelect" required>
+                <option value="">Select Doctor</option>
+            </select>
+            <div class="rating-stars">
+                <input type="radio" name="rating" value="1"> 1
+                <input type="radio" name="rating" value="2"> 2
+                <input type="radio" name="rating" value="3"> 3
+                <input type="radio" name="rating" value="4"> 4
+                <input type="radio" name="rating" value="5"> 5
+            </div>
+            <button onclick="submitRating()">Submit Rating</button>
+        </div>
+    </div>
+    <script src="../js/ratings.js"></script>
+    <script>
+        function submitRating() {
+            const doctorId = document.getElementById('doctorSelect').value;
+            const rating = document.querySelector('input[name="rating"]:checked').value;
+            
+            const doctorRating = new DoctorRating(doctorId);
+            doctorRating.loadRatings();
+            doctorRating.addRating(parseInt(rating));
+            
+            alert('Rating submitted successfully!');
+        }
+    </script>
+</body>
+</html>

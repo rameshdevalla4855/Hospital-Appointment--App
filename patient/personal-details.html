@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Personal Details</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #e1f5fe, #b3e5fc);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 800px;
+      animation: fadeRotateIn 0.8s ease-out;
+    }
+
+    @keyframes fadeRotateIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) rotateX(10deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+      }
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    #patientImg {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #fff;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    #patientImg:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .card {
+      background: linear-gradient(to right, #f8f9fa, #ffffff);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, #1976d2, #1565c0);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
+    }
+  </style>
+
+  <div class="container">
+    <div class="profile-header">
+      <img src="../images/patient.png" alt="Patient Profile" id="patientImg">
+      <h2>Personal Details</h2>
+    </div>
+    <div class="card">
+      <p><strong>Name:</strong> <span id="patientName"></span></p>
+      <p><strong>Email:</strong> <span id="patientEmail"></span></p>
+      <p><strong>Phone Number:</strong> <span id="patientPhone"></span></p>
+    </div>
+    <button onclick="goBack()">Back to Dashboard</button>
+  </div>
+
+  <script>
+    const patient = JSON.parse(localStorage.getItem("loggedInPatient"));
+
+    if (!patient) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("patientName").textContent = patient.name;
+    document.getElementById("patientEmail").textContent = patient.email;
+    document.getElementById("patientPhone").textContent = patient.phone;
+    document.getElementById("patientImg").src = patient.image || "../images/patient.png";
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

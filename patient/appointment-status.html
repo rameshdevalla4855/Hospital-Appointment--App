@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Appointment Status</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body {
+      background: linear-gradient(to right, #ede7f6, #e1f5fe);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 750px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    h2 {
+      text-align: center;
+      color: #512da8;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background-color: #f3e5f5;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 6px solid #7b1fa2;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+    }
+
+    .card p {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    button {
+      background-color: #7b1fa2;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4a0072;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      .card p {
+        font-size: 15px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📋 Appointment Status</h2>
+    <div id="appointmentStatus"></div>
+    <button onclick="goBack()">🔙 Back to Dashboard</button>
+  </div>
+
+  <script>
+    const patient = JSON.parse(localStorage.getItem("loggedInPatient"));
+
+    if (!patient) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const patientAppointments = appointments.filter(app =>
+      app.patientEmail === patient.email
+    );
+
+    const container = document.getElementById("appointmentStatus");
+
+    if (patientAppointments.length === 0) {
+      container.innerHTML = "<p>No appointments found.</p>";
+    } else {
+      container.innerHTML = patientAppointments.map(app => `
+        <div class="card">
+          <p><strong>Doctor:</strong> ${app.doctorName}</p>
+          <p><strong>Date:</strong> ${app.date}</p>
+          <p><strong>Time:</strong> ${app.slot}</p>
+          <p><strong>Meeting Link:</strong> ${app.meetLink || "Not available"}</p>
+          <p><strong>Status:</strong> ${app.status}</p>
+        </div>
+      `).join('');
+    }
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
